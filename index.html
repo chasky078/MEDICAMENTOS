@@ -1,13 +1,330 @@
-<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#101c2c"><meta name="description" content="Guía rápida de consulta de medicamentos y ubicaciones."><title>Medicamentos PRO</title><style>
-:root{--navy:#101c2c;--navy2:#1b2b40;--teal:#20b6a5;--ink:#172536;--muted:#64748b;--bg:#f3f6fa;--line:#e2e8f0;--white:#fff}*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;color:var(--ink)}header{background:linear-gradient(135deg,var(--navy),#203d58);color:white;padding:24px 18px 22px;border-radius:0 0 24px 24px;box-shadow:0 8px 24px #14283a24}.brand{display:flex;align-items:center;gap:12px;max-width:1000px;margin:auto}.logo{width:48px;height:48px;border-radius:15px;background:var(--teal);display:grid;place-items:center;font-size:25px;box-shadow:0 5px 16px #0002}.brand h1{font-size:22px;margin:0;letter-spacing:.5px}.brand p{margin:4px 0 0;color:#c3d1df;font-size:12px;letter-spacing:1.2px}.wrap{max-width:1000px;margin:auto;padding:18px 14px 38px}.searchbox{display:flex;align-items:center;gap:10px;background:white;border:1px solid var(--line);border-radius:16px;padding:0 15px;box-shadow:0 5px 18px #1b2b4009}.searchbox span{font-size:20px;color:var(--muted)}input{width:100%;border:0;outline:0;padding:17px 0;font-size:16px;background:transparent;color:var(--ink)}.hint{font-size:12px;color:var(--muted);margin:9px 4px 8px}.legend{font-size:9px;line-height:1.4;color:#8792a0;margin:0 4px 16px}.tabs{display:flex;gap:8px;margin-bottom:15px}.tab{border:1px solid var(--line);border-radius:12px;padding:11px 15px;font-size:14px;font-weight:700;background:white;color:#516174;cursor:pointer}.tab.active{background:var(--navy);color:white;border-color:var(--navy)}.stats{display:flex;justify-content:space-between;align-items:center;margin:12px 3px;color:var(--muted);font-size:13px}.list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.card{background:white;border:1px solid var(--line);border-radius:16px;padding:15px;box-shadow:0 3px 12px #10203008;min-width:0}.card h2{font-size:15px;margin:0 0 5px;overflow-wrap:anywhere}.commercial{font-size:13px;color:#5c6b7c;margin-bottom:12px}.use{display:inline-flex;align-items:center;gap:6px;background:#e5f7f4;color:#087d70;border-radius:8px;padding:7px 9px;font-size:12px;font-weight:700;margin-bottom:11px}.location{display:flex;align-items:center;gap:7px;font-size:12px;color:#405166}.locbadge{background:#eef2f7;border-radius:6px;padding:4px 7px;font-weight:800;color:#27394d}.empty{background:white;border:1px dashed #bdc8d5;border-radius:15px;padding:28px;text-align:center;color:var(--muted);grid-column:1/-1}.footer{font-size:11px;line-height:1.5;color:#687789;margin:20px 3px 0}.modal{position:fixed;inset:0;background:#0b1728a6;display:none;align-items:end;justify-content:center;padding:12px;z-index:5}.modal.open{display:flex}.sheet{background:white;border-radius:22px 22px 16px 16px;padding:22px;max-width:560px;width:100%;box-shadow:0 20px 60px #0003}.sheet h2{margin:0 0 5px}.close{float:right;border:0;background:#edf1f5;border-radius:10px;padding:8px 12px;font-size:16px}.field{border-top:1px solid var(--line);padding:13px 0}.field small{display:block;color:var(--muted);margin-bottom:5px}.field strong{font-size:15px}.warning{font-size:12px;color:#7b4a00;background:#fff4d6;border-radius:10px;padding:10px;margin-top:10px}@media(max-width:600px){.list{grid-template-columns:1fr}.brand h1{font-size:20px}.wrap{padding:15px 12px 30px}.card{padding:14px}}
-</style></head><body><header><div class="brand"><div class="logo">✚</div><div><h1>MEDICAMENTOS PRO</h1><p>GUÍA RÁPIDA DE CONSULTA</p></div></div></header><main class="wrap"><div class="searchbox"><span>⌕</span><input id="q" autocomplete="off" placeholder="Buscar medicamento o nombre comercial…" aria-label="Buscar medicamento"></div><div class="hint">Escribe unas letras para encontrar coincidencias por pauta, nombre, uso o ubicación.</div><div class="legend">Ubicaciones: C.P. Cajetines pequeños · C.G. Cajetines grandes · C.E. Caja extras · C.G/S Gotas/sobres · N.E.V. Nevera · M.P. Medicación pacientes</div><div class="tabs"><button class="tab active" id="searchTab">⌕ Buscar</button><button class="tab" id="allTab">☷ Listado A–Z</button></div><div class="stats"><span id="count">Medicamentos</span><span>Consulta rápida</span></div><section id="list" class="list"></section><p class="footer">Herramienta de consulta orientativa. Verificar siempre el nombre, presentación, pauta prescrita y protocolos de la clínica. La finalidad de un medicamento puede variar según el paciente. Los registros marcados «Confirmar principio activo» necesitan revisión antes de usar la descripción.</p></main><div class="modal" id="modal" role="dialog" aria-modal="true"><div class="sheet"><button class="close" id="close">Cerrar ✕</button><h2 id="mPauta"></h2><div id="mContent"></div><div class="warning">Esta ficha es un recordatorio orientativo, no una indicación de administración.</div></div></div><script>
-const meds = [{"pauta": "ABILIFY 10", "nombre": "ABILIFY", "uso": "Antipsicótico", "donde": "C.P."}, {"pauta": "ABILIFY 15", "nombre": "ABILIFY", "uso": "Antipsicótico", "donde": "C.P."}, {"pauta": "ACETILCISTEINA 200", "nombre": "ACETILCISTEINA 200", "uso": "Mucosidad respiratoria", "donde": "C.G/S"}, {"pauta": "ACETILCISTEINA 600", "nombre": "ACETILCISTEINA 600", "uso": "Mucosidad respiratoria", "donde": "C.G/S"}, {"pauta": "ADIRO 100", "nombre": "ADIRO", "uso": "Antiagregante plaquetario", "donde": "C.P."}, {"pauta": "AKINETON 4", "nombre": "AKINETON", "uso": "Síntomas parkinsonianos", "donde": "C.P."}, {"pauta": "ALPRAZOLAM 0,5", "nombre": "TRANQUIMAZIN", "uso": "Ansiedad", "donde": "C.P."}, {"pauta": "AMOXICILINA 875/125", "nombre": "AMOXICILINA 875/125", "uso": "Infecciones bacterianas", "donde": "C.E."}, {"pauta": "ANAFRANIL 75", "nombre": "ANAFRANIL", "uso": "Depresión y obsesiones", "donde": "C.P."}, {"pauta": "ATORVASTATINA 10", "nombre": "ATORVASTATINA", "uso": "Colesterol alto", "donde": "C.P."}, {"pauta": "ATORVASTATINA 20", "nombre": "ATORVASTATINA", "uso": "Colesterol alto", "donde": "C.P."}, {"pauta": "ATORVASTATINA 40", "nombre": "ATORVASTATINA 40", "uso": "Colesterol alto", "donde": "C.E."}, {"pauta": "AUGMENTINE 875/125", "nombre": "AMOXICILINA 875/125", "uso": "Infecciones bacterianas", "donde": "C.E."}, {"pauta": "CAPTOPRIL 25", "nombre": "CAPTOPRIL 25", "uso": "Tensión arterial", "donde": "C.E."}, {"pauta": "CLAVERSAL", "nombre": "CLAVERSAL", "uso": "Colitis ulcerosa", "donde": "C.E."}, {"pauta": "CLOPIXOL 10", "nombre": "CLOPIXOL 10", "uso": "Psicosis", "donde": "C.E."}, {"pauta": "CLOPIXOL GOTAS", "nombre": "CLOPIXOL GOTAS", "uso": "Psicosis", "donde": "NEV"}, {"pauta": "CO-DIOVAN", "nombre": "CO-DIOVAN", "uso": "Tensión arterial", "donde": "C.E."}, {"pauta": "CYMBALTA 30", "nombre": "CYMBALTA", "uso": "Depresión y ansiedad", "donde": "C.P."}, {"pauta": "CYMBALTA 60", "nombre": "CYMBALTA", "uso": "Depresión y ansiedad", "donde": "C.P."}, {"pauta": "DECENTAN 8", "nombre": "DECENTAN 8", "uso": "Trastornos psicóticos", "donde": "C.E."}, {"pauta": "DEMILOS 600", "nombre": "DEMILOS 600", "uso": "Salud ósea", "donde": "C.E."}, {"pauta": "DEPAKINE 200", "nombre": "DEPAKINE", "uso": "Epilepsia", "donde": "C.P."}, {"pauta": "DEPAKINE 300 CRONO", "nombre": "DEPAKINE 300 CRONO", "uso": "Epilepsia", "donde": "C.G."}, {"pauta": "DEPAKINE 500", "nombre": "DEPAKINE", "uso": "Epilepsia", "donde": "C.P."}, {"pauta": "DEPRAX 100", "nombre": "DEPRAX", "uso": "Depresión", "donde": "C.P."}, {"pauta": "DIAZEPAM 10", "nombre": "VALIUM", "uso": "Ansiedad y espasmos", "donde": "C.P."}, {"pauta": "DILTIAZEM 60", "nombre": "DILTIAZEM 60", "uso": "Tensión arterial", "donde": "C.E."}, {"pauta": "DILUTOL 10", "nombre": "DILUTOL", "uso": "Colesterol alto", "donde": "C.P."}, {"pauta": "DULCO-LAXO", "nombre": "DULCO-LAXO", "uso": "Estreñimiento", "donde": "C.E."}, {"pauta": "DUODART 0,4", "nombre": "DUODART 0,4", "uso": "Próstata aumentada", "donde": "M.P."}, {"pauta": "DUPHALAC", "nombre": "DUPHALAC", "uso": "Estreñimiento", "donde": "C.G/S"}, {"pauta": "EBASTEL F", "nombre": "EBASTEL", "uso": "Alergia", "donde": "C.E."}, {"pauta": "EBASTINA", "nombre": "EBASTEL", "uso": "Alergia", "donde": "C.E."}, {"pauta": "ELIQUIS 5", "nombre": "ELIQUIS 5", "uso": "Anticoagulante", "donde": "C.G."}, {"pauta": "EMCONCOR 2,5", "nombre": "EMCONCOR 2,5", "uso": "Ritmo y tensión", "donde": "C.P."}, {"pauta": "ESCITALOPRAM 10", "nombre": "CIPRALEX", "uso": "Depresión y ansiedad", "donde": "C.P."}, {"pauta": "EXFORGE 5/160", "nombre": "EXFORGE 5/160", "uso": "Tensión arterial", "donde": "M.P."}, {"pauta": "FERBISOL", "nombre": "FERRO SANOL", "uso": "Falta de hierro", "donde": "C.E."}, {"pauta": "FLUIDASA", "nombre": "FLUIDASA", "uso": "Mucosidad respiratoria", "donde": "C.P."}, {"pauta": "FOLI DOCE", "nombre": "ACFOL", "uso": "Ácido fólico", "donde": "C.P."}, {"pauta": "GABAPENTINA 100", "nombre": "GABAPENTINA", "uso": "Dolor neuropático", "donde": "C.P."}, {"pauta": "GABAPENTINA 600", "nombre": "GABAPENTINA", "uso": "Dolor neuropático", "donde": "C.P."}, {"pauta": "GABAPENTINA 800", "nombre": "GABAPENTINA", "uso": "Dolor neuropático", "donde": "C.P."}, {"pauta": "GALDAR 2,5", "nombre": "GALDAR", "uso": "Antipsicótico", "donde": "C.E."}, {"pauta": "HALOPERIDOL 10", "nombre": "HALOPERIDOL 10", "uso": "Psicosis", "donde": "C.E."}, {"pauta": "IBUPROFENO 600", "nombre": "IBUPROFENO", "uso": "Dolor e inflamación", "donde": "C.P."}, {"pauta": "INVEGA 3", "nombre": "INVEGA", "uso": "Psicosis", "donde": "C.P."}, {"pauta": "INVEGA 6", "nombre": "INVEGA", "uso": "Psicosis", "donde": "C.P."}, {"pauta": "INVEGA 9", "nombre": "INVEGA", "uso": "Psicosis", "donde": "C.P."}, {"pauta": "JANUVIA 100", "nombre": "JANUVIA 100", "uso": "Diabetes tipo 2", "donde": "C.E."}, {"pauta": "KEPRA 500", "nombre": "KEPRA", "uso": "Epilepsia", "donde": "C.E."}, {"pauta": "LAMICTAL 100", "nombre": "LAMICTAL", "uso": "Epilepsia y ánimo", "donde": "C.P."}, {"pauta": "LARGACTIL 100", "nombre": "LARGACTIL", "uso": "Psicosis y agitación", "donde": "C.P."}, {"pauta": "LATUDA 18,5", "nombre": "LATUDA", "uso": "Trastorno bipolar", "donde": "C.P."}, {"pauta": "LATUDA 74", "nombre": "LATUDA", "uso": "Trastorno bipolar", "donde": "C.P."}, {"pauta": "LEPONEX 100", "nombre": "LEPONEX", "uso": "Psicosis resistente", "donde": "C.P."}, {"pauta": "LEPONEX 25", "nombre": "LEPONEX", "uso": "Psicosis resistente", "donde": "C.P."}, {"pauta": "LEVOTIROXINA 100", "nombre": "LEVOTIROXINA", "uso": "Hormona tiroidea", "donde": "C.P."}, {"pauta": "LEXATIN 1,5", "nombre": "LEXATIN 1,5", "uso": "Ansiedad", "donde": "C.P."}, {"pauta": "LEXATIN 3", "nombre": "LEXATIN 3", "uso": "Ansiedad", "donde": "C.G."}, {"pauta": "LEXATIN 6", "nombre": "LEXATIN 6", "uso": "Ansiedad", "donde": "C.G."}, {"pauta": "LOPID 600", "nombre": "LOPID 600", "uso": "Colesterol y triglicéridos", "donde": "C.E."}, {"pauta": "LOPID 900", "nombre": "LOPID", "uso": "Colesterol y triglicéridos", "donde": "C.E."}, {"pauta": "LORAZEPAM 1", "nombre": "LORAZEPAM", "uso": "Ansiedad", "donde": "C.P."}, {"pauta": "LORAZEPAM 5", "nombre": "LORAZEPAM", "uso": "Ansiedad", "donde": "C.P."}, {"pauta": "MICTONORM 30", "nombre": "MICTONORM 30", "uso": "Vejiga hiperactiva", "donde": "C.E."}, {"pauta": "MIRTAZAPINA 30", "nombre": "MIRTAZAPINA", "uso": "Depresión", "donde": "C.P."}, {"pauta": "MIRTAZAPINA 45", "nombre": "MIRTAZAPINA", "uso": "Depresión", "donde": "C.P."}, {"pauta": "MOVICOL", "nombre": "MOVICOL", "uso": "Estreñimiento", "donde": "C.G/S"}, {"pauta": "NAPROXENO 500", "nombre": "NAPROXENO 500", "uso": "Dolor e inflamación", "donde": "C.E."}, {"pauta": "NEMEA 100", "nombre": "LEPONEX", "uso": "Psicosis resistente", "donde": "C.P."}, {"pauta": "NEMEA 200", "nombre": "LEPONEX", "uso": "Psicosis resistente", "donde": "C.P."}, {"pauta": "NEMEA 25", "nombre": "LEPONEX", "uso": "Psicosis resistente", "donde": "C.P."}, {"pauta": "NEURALEX", "nombre": "NEURALEX", "uso": "Confirmar principio activo", "donde": "C.G."}, {"pauta": "NEXIUM 20", "nombre": "ESOMEPRAZOL 20", "uso": "Acidez gástrica", "donde": "C.E."}, {"pauta": "NOBRITOL", "nombre": "NOBRITOL", "uso": "Ansiedad y ánimo", "donde": "C.E."}, {"pauta": "NOCTAMID 2", "nombre": "NOCTAMID", "uso": "Insomnio", "donde": "C.P."}, {"pauta": "OMEPRAZOL 20", "nombre": "OMEPRAZOL", "uso": "Protección gástrica", "donde": "C.P."}, {"pauta": "ORFIDAL", "nombre": "LORAZEPAM", "uso": "Ansiedad", "donde": "C.P."}, {"pauta": "PARACETAMOL 1", "nombre": "PARACETAMOL", "uso": "Dolor y fiebre", "donde": "C.P."}, {"pauta": "PARACETAMOL 650", "nombre": "PARACETAMOL", "uso": "Dolor y fiebre", "donde": "C.P."}, {"pauta": "PAROXETINA 20", "nombre": "PAROXETINA", "uso": "Depresión y ansiedad", "donde": "C.P."}, {"pauta": "PECTOX LISINA", "nombre": "PECTOX LISINA", "uso": "Mucosidad respiratoria", "donde": "C.G/S"}, {"pauta": "PERMISON 160", "nombre": "PERMISON 160", "uso": "Confirmar principio activo", "donde": "M.P."}, {"pauta": "PREDNISONA 30", "nombre": "PREDNISONA 30", "uso": "Inflamación", "donde": "C.E."}, {"pauta": "QUETIAPINA 100", "nombre": "SEROQUEL", "uso": "Psicosis y ánimo", "donde": "C.P."}, {"pauta": "QUETIAPINA 25", "nombre": "SEROQUEL", "uso": "Psicosis y ánimo", "donde": "C.P."}, {"pauta": "QUETIAPINA 50", "nombre": "SEROQUEL", "uso": "Psicosis y ánimo", "donde": "C.P."}, {"pauta": "RISPERDAL 1", "nombre": "RISPERDAL", "uso": "Psicosis", "donde": "C.E."}, {"pauta": "RISPERDAL 3", "nombre": "RISPERDAL", "uso": "Psicosis", "donde": "C.P."}, {"pauta": "RISPERDAL 6", "nombre": "RISPERDAL", "uso": "Psicosis", "donde": "C.P."}, {"pauta": "RISPERDAL SOL", "nombre": "RISPERDAL", "uso": "Psicosis", "donde": "C.G/S"}, {"pauta": "RIVOTRIL 2", "nombre": "RIVOTRIL", "uso": "Epilepsia y ansiedad", "donde": "C.P."}, {"pauta": "RXULTI 4", "nombre": "RXULTI", "uso": "Esquizofrenia", "donde": "C.P."}, {"pauta": "SEGURIL", "nombre": "SEGURIL", "uso": "Retención de líquidos", "donde": "C.P."}, {"pauta": "SEROQUEL 100", "nombre": "SEROQUEL", "uso": "Psicosis y ánimo", "donde": "C.P."}, {"pauta": "SEROQUEL 200", "nombre": "SEROQUEL", "uso": "Psicosis y ánimo", "donde": "C.P."}, {"pauta": "SEROQUEL 300", "nombre": "SEROQUEL", "uso": "Psicosis y ánimo", "donde": "C.P."}, {"pauta": "SEROQUEL 400 PROLONG", "nombre": "SEROQUEL 400 PROLONG", "uso": "Psicosis y ánimo", "donde": "C.G."}, {"pauta": "SEROXAT 20", "nombre": "PAROXETINA", "uso": "Depresión y ansiedad", "donde": "C.P."}, {"pauta": "SERTRALINA 100", "nombre": "SERTRALINA 100", "uso": "Depresión y ansiedad", "donde": "C.E."}, {"pauta": "SIMVASTATINA 10", "nombre": "SIMVASTATINA", "uso": "Colesterol alto", "donde": "C.P."}, {"pauta": "SIMVASTATINA 20", "nombre": "SIMVASTATINA", "uso": "Colesterol alto", "donde": "C.P."}, {"pauta": "SOLIAM SOL", "nombre": "SOLIAM SOL", "uso": "Confirmar principio activo", "donde": "C.G/S"}, {"pauta": "STILNOX 10", "nombre": "STILNOX", "uso": "Insomnio", "donde": "C.P."}, {"pauta": "TAMOXIFENO 20", "nombre": "TAMOXIFENO", "uso": "Tratamiento hormonal", "donde": "C.E."}, {"pauta": "TIRODRIL 5", "nombre": "TIRODRIL 5", "uso": "Tiroides", "donde": "C.G."}, {"pauta": "TOPAMAX 100", "nombre": "TOPAMAX", "uso": "Epilepsia y migraña", "donde": "C.P."}, {"pauta": "TOPAMAX 200", "nombre": "TOPAMAX", "uso": "Epilepsia y migraña", "donde": "C.P."}, {"pauta": "TRANQUIMAZIN 2", "nombre": "TRANQUIMAZIN", "uso": "Ansiedad", "donde": "C.P."}, {"pauta": "TRANSILIUM 15", "nombre": "TRANSILIUM 15", "uso": "Ansiedad", "donde": "C.E."}, {"pauta": "TRANSILIUM 50", "nombre": "TRANSILIUM 50", "uso": "Ansiedad", "donde": "NEV"}, {"pauta": "TRILEPTAL 600", "nombre": "TRILEPTAL", "uso": "Epilepsia", "donde": "C.P."}, {"pauta": "VALIUM 10", "nombre": "VALIUM", "uso": "Ansiedad y espasmos", "donde": "C.P."}, {"pauta": "VALS 80", "nombre": "VALS", "uso": "Tensión arterial", "donde": "C.P."}, {"pauta": "VANDRAL 150", "nombre": "VENLAFAXINA", "uso": "Depresión y ansiedad", "donde": "C.P."}, {"pauta": "VENLAFAXINA 225", "nombre": "VENLAFAXINA", "uso": "Depresión y ansiedad", "donde": "C.P."}, {"pauta": "VENLAFAXINA 75", "nombre": "VENLAFAXINA", "uso": "Depresión y ansiedad", "donde": "C.P."}, {"pauta": "ZALDIAR", "nombre": "ZALDIAR", "uso": "Dolor moderado", "donde": "C.E."}, {"pauta": "ZARELIX 225", "nombre": "VENLAFAXINA", "uso": "Depresión y ansiedad", "donde": "C.P."}, {"pauta": "ZONEGRAN 100", "nombre": "ZONEGRAN 100", "uso": "Epilepsia", "donde": "C.E."}, {"pauta": "ZYPREXA 10", "nombre": "ZYPREXA", "uso": "Psicosis y ánimo", "donde": "C.P."}, {"pauta": "ZYPREXA 10 VELOTAB", "nombre": "ZYPREXA", "uso": "Psicosis y ánimo", "donde": "C.P."}, {"pauta": "ZYPREXA 15 VELOTAB", "nombre": "ZYPREXA", "uso": "Psicosis y ánimo", "donde": "C.P."}, {"pauta": "ZYPREXA 20 VELOTAB", "nombre": "ZYPREXA", "uso": "Psicosis y ánimo", "donde": "C.P."}, {"pauta": "BESITRAN 100", "nombre": "SERTRALINA 100", "uso": "Depresión y ansiedad", "donde": "C.E."}, {"pauta": "FLUOXETINA 20", "nombre": "FLUOXETINA", "uso": "Depresión y ansiedad", "donde": "C.P."}];
-const $=id=>document.getElementById(id);let mode='search';
-function norm(s){return (s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim()}
-function render(){const q=norm($('q').value);let arr=meds.filter(m=>!q||[m.pauta,m.nombre,m.uso,m.donde,locName(m.donde)].some(v=>norm(v).includes(q)));arr.sort((a,b)=>a.pauta.localeCompare(b.pauta,'es'));$('count').textContent=`${arr.length} medicamento${arr.length===1?'':'s'}`;$('list').innerHTML='';if(!arr.length){$('list').innerHTML='<div class="empty">No hay coincidencias.<br>Prueba con otra parte del nombre.</div>';return}for(const m of arr){const c=document.createElement('article');c.className='card';c.tabIndex=0;c.innerHTML=`<h2>${esc(m.pauta)}</h2>`;c.onclick=()=>openMed(m);c.onkeydown=e=>{if(e.key==='Enter')openMed(m)};$('list').appendChild(c)}}
-function locName(code){return ({'C.P.':'Cajetines pequeños','C.G.':'Cajetines grandes','C.E.':'Caja extras','C.G/S':'Caja gotas/sobres','NEV':'Nevera','N.E.V.':'Nevera','M.P.':'Medicación pacientes'})[code]||'Ubicación por confirmar'}
-function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function openMed(m){$('mPauta').textContent=m.pauta;$('mContent').innerHTML=`<div class="field"><small>Nombre comercial / conocido</small><strong>${esc(m.nombre)}</strong></div><div class="field"><small>Uso principal orientativo</small><strong>${esc(m.uso)}</strong></div><div class="field"><small>Dónde encontrarlo</small><strong>${esc(m.donde)} · ${esc(locName(m.donde))}</strong></div>`;$('modal').classList.add('open')}
-$('q').addEventListener('input',render);$('searchTab').onclick=()=>{$('searchTab').classList.add('active');$('allTab').classList.remove('active');mode='search';$('q').focus();render()};$('allTab').onclick=()=>{$('allTab').classList.add('active');$('searchTab').classList.remove('active');$('q').value='';render()};$('close').onclick=()=>$('modal').classList.remove('open');$('modal').onclick=e=>{if(e.target===$('modal'))$('modal').classList.remove('open')};document.addEventListener('keydown',e=>{if(e.key==='Escape')$('modal').classList.remove('open')});render();
 
-</script></body></html>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#101c2c">
+<title>MEDICAMENTOS PRO</title>
+<style>
+:root{--navy:#101c2c;--navy2:#203d58;--teal:#20b6a5;--ink:#172536;--muted:#64748b;--bg:#f3f6fa;--line:#e2e8f0;--white:#fff}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;color:var(--ink)}
+header{background:linear-gradient(135deg,var(--navy),var(--navy2));color:white;padding:23px 16px;border-radius:0 0 23px 23px;box-shadow:0 8px 24px #14283a24}
+.brand{display:flex;align-items:center;gap:12px;max-width:800px;margin:auto}
+.logo{width:46px;height:46px;border-radius:14px;background:var(--teal);display:grid;place-items:center;font-size:25px;font-weight:bold}
+h1{font-size:21px;margin:0;letter-spacing:.4px}
+.subtitle{margin:5px 0 0;color:#c3d1df;font-size:11px;letter-spacing:1.2px}
+main{max-width:800px;margin:auto;padding:16px 13px 30px}
+.searchbox{display:flex;align-items:center;gap:10px;background:white;border:1px solid var(--line);border-radius:14px;padding:0 13px;box-shadow:0 4px 15px #1b2b4009}
+.searchicon{font-size:22px;color:var(--muted)}
+input{width:100%;border:0;outline:0;padding:16px 0;font-size:16px;background:transparent;color:var(--ink)}
+.legend{font-size:9px;line-height:1.5;color:#778394;margin:7px 3px 15px}
+.tabs{display:flex;gap:8px;margin:12px 0}
+.tab{border:1px solid var(--line);border-radius:10px;padding:10px 13px;font-size:13px;font-weight:700;background:white;color:#516174;cursor:pointer}
+.tab.active{background:var(--navy);color:white;border-color:var(--navy)}
+.stats{display:flex;justify-content:space-between;align-items:center;margin:14px 3px 10px;color:var(--muted);font-size:12px}
+.list{display:grid;grid-template-columns:1fr;gap:8px}
+.card{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:white;border:1px solid var(--line);border-radius:13px;padding:15px;box-shadow:0 2px 9px #10203007;cursor:pointer;color:var(--ink);font:inherit}
+.card:active{background:#f0fbf9}
+.cardname{font-size:15px;font-weight:700;overflow-wrap:anywhere;flex:1}
+.medicon{width:34px;height:34px;flex-shrink:0;display:grid;place-items:center;background:#e5f7f4;color:#087d70;border-radius:10px;font-size:19px}
+.arrow{color:#718096;font-size:23px}
+.empty{background:white;border:1px dashed #bdc8d5;border-radius:14px;padding:25px;text-align:center;color:var(--muted)}
+.footer{font-size:11px;line-height:1.5;color:#687789;margin:20px 3px 0}
+.modal{position:fixed;inset:0;background:#0b1728a6;display:none;align-items:flex-end;justify-content:center;padding:10px;z-index:5}
+.modal.open{display:flex}
+.sheet{background:white;border-radius:22px 22px 16px 16px;padding:21px;width:100%;max-width:540px;max-height:85dvh;overflow-y:auto;box-shadow:0 20px 60px #0003}
+.close{display:block;margin-left:auto;border:0;background:#edf1f5;border-radius:10px;padding:9px 12px;font-size:14px;cursor:pointer}
+.sheet h2{font-size:22px;margin:17px 0 15px;overflow-wrap:anywhere}
+.field{border-top:1px solid var(--line);padding:14px 0}
+.field small{display:block;color:var(--muted);font-size:12px;margin-bottom:6px}
+.field strong{font-size:15px;line-height:1.4}
+.locationcode{display:inline-block;background:#e5f7f4;color:#087d70;padding:5px 8px;border-radius:7px;font-weight:800;margin-right:5px}
+.warning{font-size:11px;line-height:1.5;color:#7b4a00;background:#fff4d6;border-radius:10px;padding:10px;margin-top:10px}
+@media(min-width:560px){.list{grid-template-columns:repeat(2,minmax(0,1fr))}.card{min-height:65px}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <div class="logo">✚</div>
+    <div>
+      <h1>MEDICAMENTOS PRO</h1>
+      <p class="subtitle">GUÍA RÁPIDA DE CONSULTA</p>
+    </div>
+  </div>
+</header>
+
+<main>
+  <div class="searchbox">
+    <span class="searchicon">⌕</span>
+    <input id="q" autocomplete="off" placeholder="Buscar medicamento..." aria-label="Buscar medicamento">
+  </div>
+
+  <div class="legend">
+    Ubicaciones: C.P. Cajetines pequeños · C.G. Cajetines grandes · C.E. Caja extras · C.G/S Gotas/sobres · N.E.V. Nevera · M.P. Medicación pacientes
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" id="searchTab">⌕ Buscar</button>
+    <button class="tab" id="allTab">☷ Listado A–Z</button>
+  </div>
+
+  <div class="stats">
+    <span id="count">Medicamentos</span>
+    <span>Consulta rápida</span>
+  </div>
+
+  <section id="list" class="list"></section>
+
+  <p class="footer">
+    Herramienta de consulta orientativa. Comprobar siempre el nombre, la presentación, la pauta prescrita y los protocolos de la clínica. Esta aplicación no indica qué medicamento administrar.
+  </p>
+</main>
+
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="mPauta">
+  <div class="sheet">
+    <button class="close" id="close">Cerrar ✕</button>
+    <h2 id="mPauta"></h2>
+    <div id="mContent"></div>
+    <div class="warning">Ficha de consulta orientativa. La administración debe seguir la pauta prescrita y los protocolos de la clínica.</div>
+  </div>
+</div>
+
+<script>
+const meds = [
+["ABILIFY 10","ABILIFY","Antipsicótico","C.P."],
+["ABILIFY 15","ABILIFY","Antipsicótico","C.P."],
+["ACETILCISTEINA 200","ACETILCISTEINA 200","Mucosidad respiratoria","C.G/S"],
+["ACETILCISTEINA 600","ACETILCISTEINA 600","Mucosidad respiratoria","C.G/S"],
+["ADIRO 100","ADIRO","Antiagregante plaquetario","C.P."],
+["AKINETON 4","AKINETON","Síntomas parkinsonianos","C.P."],
+["ALPRAZOLAM 0,5","TRANQUIMAZIN","Ansiedad","C.P."],
+["AMOXICILINA 875/125","AMOXICILINA 875/125","Infecciones bacterianas","C.E."],
+["ANAFRANIL 75","ANAFRANIL","Depresión y obsesiones","C.P."],
+["ATORVASTATINA 10","ATORVASTATINA","Colesterol alto","C.P."],
+["ATORVASTATINA 20","ATORVASTATINA","Colesterol alto","C.P."],
+["ATORVASTATINA 40","ATORVASTATINA 40","Colesterol alto","C.E."],
+["AUGMENTINE 875/125","AMOXICILINA 875/125","Infecciones bacterianas","C.E."],
+["CAPTOPRIL 25","CAPTOPRIL 25","Tensión arterial","C.E."],
+["CLAVERSAL","CLAVERSAL","Colitis ulcerosa","C.E."],
+["CLOPIXOL 10","CLOPIXOL 10","Psicosis","C.E."],
+["CLOPIXOL GOTAS","CLOPIXOL GOTAS","Psicosis","N.E.V."],
+["CO-DIOVAN","CO-DIOVAN","Tensión arterial","C.E."],
+["CYMBALTA 30","CYMBALTA","Depresión y ansiedad","C.P."],
+["CYMBALTA 60","CYMBALTA","Depresión y ansiedad","C.P."],
+["DECENTAN 8","DECENTAN 8","Trastornos psicóticos","C.E."],
+["DEMILOS 600","DEMILOS 600","Salud ósea","C.E."],
+["DEPAKINE 200","DEPAKINE","Epilepsia","C.P."],
+["DEPAKINE 300 CRONO","DEPAKINE 300 CRONO","Epilepsia","C.G."],
+["DEPAKINE 500","DEPAKINE","Epilepsia","C.P."],
+["DEPRAX 100","DEPRAX","Depresión","C.P."],
+["DIAZEPAM 10","VALIUM","Ansiedad y espasmos","C.P."],
+["DILTIAZEM 60","DILTIAZEM 60","Tensión arterial","C.E."],
+["DILUTOL 10","DILUTOL","Colesterol alto","C.P."],
+["DULCO-LAXO","DULCO-LAXO","Estreñimiento","C.E."],
+["DUODART 0,4","DUODART 0,4","Próstata aumentada","M.P."],
+["DUPHALAC","DUPHALAC","Estreñimiento","C.G/S"],
+["EBASTEL F","EBASTEL","Alergia","C.E."],
+["EBASTINA","EBASTEL","Alergia","C.E."],
+["ELIQUIS 5","ELIQUIS 5","Anticoagulante","C.G."],
+["EMCONCOR 2,5","EMCONCOR 2,5","Ritmo y tensión","C.P."],
+["ESCITALOPRAM 10","CIPRALEX","Depresión y ansiedad","C.P."],
+["EXFORGE 5/160","EXFORGE 5/160","Tensión arterial","M.P."],
+["FERBISOL","FERRO SANOL","Falta de hierro","C.E."],
+["FLUIDASA","FLUIDASA","Mucosidad respiratoria","C.P."],
+["FOLI DOCE","ACFOL","Ácido fólico","C.P."],
+["GABAPENTINA 100","GABAPENTINA","Dolor neuropático","C.P."],
+["GABAPENTINA 600","GABAPENTINA","Dolor neuropático","C.P."],
+["GABAPENTINA 800","GABAPENTINA","Dolor neuropático","C.P."],
+["GALDAR 2,5","GALDAR","Antipsicótico","C.E."],
+["HALOPERIDOL 10","HALOPERIDOL 10","Psicosis","C.E."],
+["IBUPROFENO 600","IBUPROFENO","Dolor e inflamación","C.P."],
+["INVEGA 3","INVEGA","Psicosis","C.P."],
+["INVEGA 6","INVEGA","Psicosis","C.P."],
+["INVEGA 9","INVEGA","Psicosis","C.P."],
+["JANUVIA 100","JANUVIA 100","Diabetes tipo 2","C.E."],
+["KEPRA 500","KEPRA","Epilepsia","C.E."],
+["LAMICTAL 100","LAMICTAL","Epilepsia y ánimo","C.P."],
+["LARGACTIL 100","LARGACTIL","Psicosis y agitación","C.P."],
+["LATUDA 18,5","LATUDA","Trastorno bipolar","C.P."],
+["LATUDA 74","LATUDA","Trastorno bipolar","C.P."],
+["LEPONEX 100","LEPONEX","Psicosis resistente","C.P."],
+["LEPONEX 25","LEPONEX","Psicosis resistente","C.P."],
+["LEVOTIROXINA 100","LEVOTIROXINA","Hormona tiroidea","C.P."],
+["LEXATIN 1,5","LEXATIN 1,5","Ansiedad","C.P."],
+["LEXATIN 3","LEXATIN 3","Ansiedad","C.G."],
+["LEXATIN 6","LEXATIN 6","Ansiedad","C.G."],
+["LOPID 600","LOPID 600","Colesterol y triglicéridos","C.E."],
+["LOPID 900","LOPID","Colesterol y triglicéridos","C.E."],
+["LORAZEPAM 1","LORAZEPAM","Ansiedad","C.P."],
+["LORAZEPAM 5","LORAZEPAM","Ansiedad","C.P."],
+["MICTONORM 30","MICTONORM 30","Vejiga hiperactiva","C.E."],
+["MIRTAZAPINA 30","MIRTAZAPINA","Depresión","C.P."],
+["MIRTAZAPINA 45","MIRTAZAPINA","Depresión","C.P."],
+["MOVICOL","MOVICOL","Estreñimiento","C.G/S"],
+["NAPROXENO 500","NAPROXENO 500","Dolor e inflamación","C.E."],
+["NEMEA 100","LEPONEX","Psicosis resistente","C.P."],
+["NEMEA 200","LEPONEX","Psicosis resistente","C.P."],
+["NEMEA 25","LEPONEX","Psicosis resistente","C.P."],
+["NEURALEX","NEURALEX","Confirmar principio activo","C.G."],
+["NEXIUM 20","ESOMEPRAZOL 20","Acidez gástrica","C.E."],
+["NOBRITOL","NOBRITOL","Ansiedad y ánimo","C.E."],
+["NOCTAMID 2","NOCTAMID","Insomnio","C.P."],
+["OMEPRAZOL 20","OMEPRAZOL","Protección gástrica","C.P."],
+["ORFIDAL","LORAZEPAM","Ansiedad","C.P."],
+["PARACETAMOL 1","PARACETAMOL","Dolor y fiebre","C.P."],
+["PARACETAMOL 650","PARACETAMOL","Dolor y fiebre","C.P."],
+["PAROXETINA 20","PAROXETINA","Depresión y ansiedad","C.P."],
+["PECTOX LISINA","PECTOX LISINA","Mucosidad respiratoria","C.G/S"],
+["PERMISON 160","PERMISON 160","Confirmar principio activo","M.P."],
+["PREDNISONA 30","PREDNISONA 30","Inflamación","C.E."],
+["QUETIAPINA 100","SEROQUEL","Psicosis y ánimo","C.P."],
+["QUETIAPINA 25","SEROQUEL","Psicosis y ánimo","C.P."],
+["QUETIAPINA 50","SEROQUEL","Psicosis y ánimo","C.P."],
+["RISPERDAL 1","RISPERDAL","Psicosis","C.E."],
+["RISPERDAL 3","RISPERDAL","Psicosis","C.P."],
+["RISPERDAL 6","RISPERDAL","Psicosis","C.P."],
+["RISPERDAL SOL","RISPERDAL","Psicosis","C.G/S"],
+["RIVOTRIL 2","RIVOTRIL","Epilepsia y ansiedad","C.P."],
+["RXULTI 4","RXULTI","Esquizofrenia","C.P."],
+["SEGURIL","SEGURIL","Retención de líquidos","C.P."],
+["SEROQUEL 100","SEROQUEL","Psicosis y ánimo","C.P."],
+["SEROQUEL 200","SEROQUEL","Psicosis y ánimo","C.P."],
+["SEROQUEL 300","SEROQUEL","Psicosis y ánimo","C.P."],
+["SEROQUEL 400 PROLONG","SEROQUEL 400 PROLONG","Psicosis y ánimo","C.G."],
+["SEROXAT 20","PAROXETINA","Depresión y ansiedad","C.P."],
+["SERTRALINA 100","SERTRALINA 100","Depresión y ansiedad","C.E."],
+["SIMVASTATINA 10","SIMVASTATINA","Colesterol alto","C.P."],
+["SIMVASTATINA 20","SIMVASTATINA","Colesterol alto","C.P."],
+["SOLIAM SOL","SOLIAM SOL","Confirmar principio activo","C.G/S"],
+["STILNOX 10","STILNOX","Insomnio","C.P."],
+["TAMOXIFENO 20","TAMOXIFENO","Tratamiento hormonal","C.E."],
+["TIRODRIL 5","TIRODRIL 5","Tiroides","C.G."],
+["TOPAMAX 100","TOPAMAX","Epilepsia y migraña","C.P."],
+["TOPAMAX 200","TOPAMAX","Epilepsia y migraña","C.P."],
+["TRANQUIMAZIN 2","TRANQUIMAZIN","Ansiedad","C.P."],
+["TRANSILIUM 15","TRANSILIUM 15","Ansiedad","C.E."],
+["TRANSILIUM 50","TRANSILIUM 50","Ansiedad","N.E.V."],
+["TRILEPTAL 600","TRILEPTAL","Epilepsia","C.P."],
+["VALIUM 10","VALIUM","Ansiedad y espasmos","C.P."],
+["VALS 80","VALS","Tensión arterial","C.P."],
+["VANDRAL 150","VENLAFAXINA","Depresión y ansiedad","C.P."],
+["VENLAFAXINA 225","VENLAFAXINA","Depresión y ansiedad","C.P."],
+["VENLAFAXINA 75","VENLAFAXINA","Depresión y ansiedad","C.P."],
+["ZALDIAR","ZALDIAR","Dolor moderado","C.E."],
+["ZARELIX 225","VENLAFAXINA","Depresión y ansiedad","C.P."],
+["ZONEGRAN 100","ZONEGRAN 100","Epilepsia","C.E."],
+["ZYPREXA 10","ZYPREXA","Psicosis y ánimo","C.P."],
+["ZYPREXA 10 VELOTAB","ZYPREXA","Psicosis y ánimo","C.P."],
+["ZYPREXA 15 VELOTAB","ZYPREXA","Psicosis y ánimo","C.P."],
+["ZYPREXA 20 VELOTAB","ZYPREXA","Psicosis y ánimo","C.P."],
+["BESITRAN 100","SERTRALINA 100","Depresión y ansiedad","C.E."],
+["FLUOXETINA 20","FLUOXETINA","Depresión y ansiedad","C.P."]
+].map(([pauta,nombre,uso,donde])=>({pauta,nombre,uso,donde}));
+
+const $ = id => document.getElementById(id);
+
+function norm(s){
+  return (s||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim();
+}
+
+function locName(code){
+  return ({
+    "C.P.":"Cajetines pequeños",
+    "C.G.":"Cajetines grandes",
+    "C.E.":"Caja extras",
+    "C.G/S":"Caja gotas/sobres",
+    "N.E.V.":"Nevera",
+    "NEV":"Nevera",
+    "M.P.":"Medicación pacientes"
+  })[code] || "Ubicación por confirmar";
+}
+
+function esc(s){
+  return String(s).replace(/[&<>"']/g,c=>({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  })[c]);
+}
+
+function render(){
+  const q = norm($("q").value);
+  const arr = meds.filter(m =>
+    !q || [m.pauta,m.nombre,m.uso,m.donde,locName(m.donde)]
+      .some(v=>norm(v).includes(q))
+  ).sort((a,b)=>a.pauta.localeCompare(b.pauta,"es"));
+
+  $("count").textContent = arr.length+" medicamento"+(arr.length===1?"":"s");
+  $("list").innerHTML = "";
+
+  if(!arr.length){
+    $("list").innerHTML =
+      '<div class="empty">No hay coincidencias.<br>Prueba con otro nombre.</div>';
+    return;
+  }
+
+  for(const m of arr){
+    const c = document.createElement("button");
+    c.type = "button";
+    c.className = "card";
+    c.innerHTML = `
+      <span class="medicon">✚</span>
+      <span class="cardname">${esc(m.pauta)}</span>
+      <span class="arrow">›</span>
+    `;
+    c.addEventListener("click",()=>openMed(m));
+    $("list").appendChild(c);
+  }
+}
+
+function openMed(m){
+  $("mPauta").textContent = m.pauta;
+  $("mContent").innerHTML = `
+    <div class="field">
+      <small>Nombre comercial / conocido</small>
+      <strong>${esc(m.nombre)}</strong>
+    </div>
+    <div class="field">
+      <small>Uso principal orientativo</small>
+      <strong>${esc(m.uso)}</strong>
+    </div>
+    <div class="field">
+      <small>Dónde encontrarlo</small>
+      <strong><span class="locationcode">${esc(m.donde)}</span>${esc(locName(m.donde))}</strong>
+    </div>
+  `;
+  $("modal").classList.add("open");
+}
+
+$("q").addEventListener("input",render);
+
+$("searchTab").addEventListener("click",()=>{
+  $("searchTab").classList.add("active");
+  $("allTab").classList.remove("active");
+  $("q").focus();
+  render();
+});
+
+$("allTab").addEventListener("click",()=>{
+  $("allTab").classList.add("active");
+  $("searchTab").classList.remove("active");
+  $("q").value = "";
+  render();
+});
+
+$("close").addEventListener("click",()=>$("modal").classList.remove("open"));
+
+$("modal").addEventListener("click",e=>{
+  if(e.target === $("modal")) $("modal").classList.remove("open");
+});
+
+document.addEventListener("keydown",e=>{
+  if(e.key === "Escape") $("modal").classList.remove("open");
+});
+
+render();
+</script>
+</body>
+</html>
